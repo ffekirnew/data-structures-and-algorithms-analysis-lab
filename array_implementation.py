@@ -1,7 +1,6 @@
 class Array:
-
 	"""
-	An array is a data structure with the following key properties:
+	An __array is a data structure with the following key properties:
 	* it only contains a fixed number of elements once initialized
 	* it only contains elements of the same data type
 
@@ -11,34 +10,30 @@ class Array:
 	"""
 
 	def __init__(self, data_type, length):
-		self.array = [None] * length
-		self.size = length
-		self.data_type = data_type
-		self.lastindex = 0
-
-	def __str__(self):
-		return "{}".format(self.array)
+		self.__array = [None] * length
+		self.__size = length
+		self.__data_type = data_type
+		self.__lastindex = 0
 
 	def __repr__(self):
-		return "{}".format(self.array)
+		return "Array: {}".format(self.__array)
 
 	def __getitem__(self, item):
 		'''
 		this special method allows the elements of the objects of the class to 
 		be accessed by using indexes and also makes the objects iterable
-		'''
-
-		return self.array[item]
+		''' 
+		return self.__array[item]
 
 	def __len__(self):
 		'''
 		this method allows the objects of the class to respond to the len()
 		method call
 		'''
-		return self.size
+		return self.__size
 
 	def __bytes__(self):
-		pass
+		return bytes(self.__array)
 
 	def __eq__(self, other):
 		pass
@@ -47,74 +42,78 @@ class Array:
 		pass
 
 	def __bool__(self):
-		return self.array != []
+		return self.__lastindex == 0
 
 	def insert(self, index, new_data):
 		'''
-		This method is used to insert elements into the array to a specific index
+		This method is used to insert elements into the __array to a specific index
 		time-complexity = O(n)
 		'''
-		if type(new_data) == self.data_type:
+		if isinstance(new_data, self.__data_type):
 			if not self.__is_full__():
-				if index <= self.lastindex:
+				if index <= self.__lastindex:
 					self.__shift_right__(index)
-					self.array[index] = new_data
+					self.__array[index] = new_data
 
-				else:
-					print("There are empty places before the index inserted.")
-			else:
-				print("Array is full.")
-		else:
-			print("The array only accepts elements of {}.".format(self.data_type))
+				else: raise IndexError("index is out of bounds. There are empty places before this index.")
+			else: raise IndexError("the array is full.")
+		else: raise TypeError("only elements of {} are allowed in this array.".format(self.__data_type))
 
-	def append(self, new_data):
+	def add(self, new_data):
 		'''
-		This method is used to insert elements to the end of the array
+		This method is used to insert elements to the end of the __array
 		time-complexity = O(1)
 		'''
-		if not self.__is_full__():
-			self.array[self.lastindex] = new_data
-			self.lastindex += 1
-		else:
-			print("Array is full.")
+		self.insert(self.__lastindex, new_data)
 	
 	def remove(self, index):
 		'''
-		This method is used to remove elements from a specific index on the array 
+		This method is used to remove elements from a specific index on the __array 
 		time-complexity = O(n)
 		'''
-		if index < self.lastindex:
-			self.array[index] = None
-			self.__shift_left__(index)
+		if not self.__is_empty__():
+			if index < self.__lastindex:
+				self.__array[index] = None
+				self.__shift_left__(index)
+			else:
+				raise IndexError("Index out of bounds. No element exists at the given index.")
 		else:
-			print("The index is out of bounds.")
+			raise IndexError("The array is empty.")
 
 	def pop(self):
 		'''
-		This method is used to remove the element at the end of the array
+		This method is used to remove the element at the end of the __array
 		returns the removed element
 		time-complexity = O(1)
 		'''
 		if not self.__is_empty__():
-			self.lastindex -= 1
-			self.array[self.lastindex] = None
+			self.__lastindex -= 1
+			temp = self.__array[self.__lastindex]
+			self.__array[self.__lastindex] = None
+			return temp
 		else:
-			return "Array is currently empty."
+			raise IndexError("The array is empty.")
+
+	def reverse(self):
+		reversed___array = __array(int, self.__size)
+		for index in range(self.__size - 1, -1, -1):
+			reversed___array.add(self.__array[index])
+		return reversed___array
 		
 
 	def __is_empty__(self):
 		'''
-		This method returns a boolean indicating if the array is currently empty
+		This method returns a boolean indicating if the __array is currently empty
 		time-complexity = O(1) [simple comparison]
 		'''
-		return self.lastindex == 0
+		return self.__lastindex == 0
 
 	def __is_full__(self):
 		'''
-		This method returns a boolean indicating if the array is currently full
+		This method returns a boolean indicating if the __array is currently full
 		time-complexity = O(1) [simple comparison]
 		'''
-		return self.lastindex == self.size
+		return self.__lastindex == self.__size
 
 	def __shift_right__(self, start_index):
 		'''
@@ -122,10 +121,10 @@ class Array:
 		returns nothing
 		time-complexity = O(n)
 		'''
-		for index in range(self.size - 2, start_index - 1, -1):
-			self.array[index + 1] = self.array[index]
+		for index in range(self.__size - 2, start_index - 1, -1):
+			self.__array[index + 1] = self.__array[index]
 
-		self.lastindex += 1
+		self.__lastindex += 1
 
 	def __shift_left__(self, start_index):
 		'''
@@ -133,17 +132,17 @@ class Array:
 		returns nothing
 		time-complexity = O(n)
 		'''
-		for index in range(start_index + 1, self.size):
-			self.array[index - 1] = self.array[index]
+		for index in range(start_index + 1, self.__size):
+			self.__array[index - 1] = self.__array[index]
 			
-		self.lastindex -= 1
-		self.array[self.lastindex] = None
+		self.__lastindex -= 1
+		self.__array[self.__lastindex] = None
 
 	def migrate(self):
 		'''
-		This a method to be used in the future when an array is full and the user wants 
+		This a method to be used in the future when an __array is full and the user wants 
 		to add another element, we can then make another bigger arrray, copy every element 
-		of the existing array to the newly created array, delete the smaller array and assign 
-		the new array as the original one
+		of the existing __array to the newly created __array, delete the smaller __array and assign 
+		the new __array as the original one
 		'''
-		pass
+		pass		
